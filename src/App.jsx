@@ -10,15 +10,12 @@ function Joke() {
   const [joke, setJoke] = useState([]);
   
   useEffect(() => {
-    fetch("https://api.balldontlie.io/v1/teams/", {
-      method: "GET",
-      headers: {
-        "Authorization": "82fe8946-7fc4-4b25-bd1c-8225d39109c4",
-      },
+    fetch("http://localhost:5034/api/ClientApi/GetClients", {
+     
     })
       .then((response) => response.json())
       .then((data) => {
-        setJoke(data.data); 
+        setJoke(data); 
         console.log(data);
       })
       .catch((error) => console.log(error));
@@ -31,10 +28,10 @@ function Joke() {
 <div>
 
 
-{joke.map((a,i)=>(
+{joke && joke.map((a,i)=>(
 <ul> 
 
-<li key={i}> <p className='name'>{a.name}</p></li>
+<li key={i}> <p className='name'>{a.client_name}</p></li>
 
 </ul>
 ))}
