@@ -1,49 +1,101 @@
-// import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
-import './App.css'
-
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 import { Button, ButtonGroup, Modal } from 'react-bootstrap';
 
-function Joke() {
+const Clients = () => {
+    const [client, setClient] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-  const [joke, setJoke] = useState([]);
-  
-  useEffect(() => {
-    fetch("http://localhost:5034/api/ClientApi/GetClients", {
-     
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setJoke(data); 
-        console.log(data);
-      })
-      .catch((error) => console.log(error));
-  }, []);
-  return (
+    const [showAddModal, setShowAddModal] = useState(false);
 
-<>
+    const makeAddModalAppear = () => setShowAddModal(!showAddModal);
 
-<div className="title">Teams</div>
-<div>
-{joke && joke.map((a,i)=>(
-<ul> 
+    const [clientName, setClientName] = useState("");
 
-<li key={i}> <p className='name'>{a.client_name}</p></li>
+    const getClients = async () => {
+        const response = await fetch(
+            "http://localhost:5184/api/ClientApi/GetClients"
+        );
+        const result = await response.json()
+        setClient(result)
+        setLoading(false);
+    }
 
-</ul>
-))}
+    const saveClient = async () => {
+        const dataToSend = {
+            "clientName": clientName,
+            "residency": "quite place"
+        }
 
-</div>
+        const response = await fetch(
+            "http://localhost:5184/api/ClientApi/saveclient",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(dataToSend)
+            }
+        );
+        getClients();
+        makeAddModalAppear();
 
-</>
+    }
+
+    const DeleteClient = async (id) => {
+
+        const response = await fetch(
+            "http://localhost:5184/api/ClientApi/deleteclient?Id="+id,
+            {
+                method: "DELETE",
+            }
+        );
+        getClients();
+        
+
+    }
 
 
-    // <div>
-    //   <h2>Teams:</h2>
-    //   {<p>{joke}</p>}
-    // </div>
-  );
+    useEffect(() => {
+        getClients();
+    }, []);
+
+    if (loading) return <center><h1>Loading</h1></center>
+
+    return (
+        <>
+            <Modal show={showAddModal} onHide={makeAddModalAppear}>
+                <Modal.Header closeButton>
+                    new client info
+                </Modal.Header>
+                <Modal.Body>
+                    <input type="text"
+                        value={clientName}
+                        onChange={(e) => setClientName(e.target.value)}
+                    />
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button onClick={saveClient}>Save client</Button>
+                </Modal.Footer>
+            </Modal>
+
+
+            <div className="container mt-5">
+                <Button
+                    className='mb-2'
+                    onClick={makeAddModalAppear}
+                >Add new Client</Button>
+                <ul>
+                    {
+                        client.map((c) =>
+                            <li key={c.id} >{c.clientName} || {c.residency}
+                            <Button onClick={()=>DeleteClient(c.id)}>Delete</Button>
+                            </li>
+                        )
+                    }
+                </ul>
+            </div>
+        </>
+    );
 }
-export default Joke;
+
+export default Clients;
