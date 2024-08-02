@@ -4,6 +4,7 @@
 import './App.css'
 
 import React, { useState, useEffect } from "react";
+import { Button, ButtonGroup, Modal } from 'react-bootstrap';
 
 function Joke() {
 
@@ -26,8 +27,6 @@ function Joke() {
 
 <div className="title">Teams</div>
 <div>
-
-
 {joke && joke.map((a,i)=>(
 <ul> 
 
@@ -37,7 +36,6 @@ function Joke() {
 ))}
 
 </div>
-
 
 </>
 
